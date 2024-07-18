@@ -9,6 +9,7 @@ dist/
 contracts/out/
 contracts/cache/
 contracts/lib/
+contracts/broadcast/
 
 # Frontend (React) project ignores
 frontend/node_modules/
