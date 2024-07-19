@@ -2,7 +2,7 @@ import React from 'react'
 import { useAccount } from 'wagmi'
 import { ConnectButton } from '@rainbow-me/rainbowkit'
 import CreateCollection from '../components/CreateCollection'
-import ViewNFTs from '../components/ViewNFTs'
+import ViewCollections from '../components/ViewCollections'
 
 const Home: React.FC = () => {
   const { address, isConnected } = useAccount()
@@ -27,10 +27,7 @@ const Home: React.FC = () => {
                   <h3 className="text-xl font-semibold mb-4">Create a New NFT Collection</h3>
                   <CreateCollection />
                 </div>
-                <div>
-                  <h3 className="text-xl font-semibold mb-4">Your NFT Collections</h3>
-                  <ViewNFTs />
-                </div>
+                <ViewCollections />
               </div>
             ) : (
               <p>Please connect your wallet to continue</p>
@@ -41,6 +38,5 @@ const Home: React.FC = () => {
     </div>
   )
 }
-
 
 export default Home
