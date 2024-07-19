@@ -7,18 +7,21 @@ import {
 } from "wagmi";
 import { parseAbi } from "viem";
 import { sepolia } from "../wagmi";
+import { uploadToIPFS } from "../utils/ipfs";
 
 const FACTORY_ADDRESS =
-  "0x533Bd7f13F697609af09ee17AC1F073e7fF3F517" as `0x${string}`;
+  "0x7dA41Ed5A6607532bA4E9893C63c58F4e407b479" as `0x${string}`;
 
 const factoryABI = parseAbi([
-  "function createCollection(string memory name, string memory symbol) public returns (address)",
+  "function createCollection(string memory name, string memory symbol, string imageUrl) public returns (address)",
 ]);
 
 const CreateCollection: React.FC = () => {
   const [name, setName] = useState("");
   const [symbol, setSymbol] = useState("");
+  const [file, setFile] = useState<File | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [isUploading, setIsUploading] = useState(false);
 
   const { isConnected } = useAccount();
   const chainId = useChainId();
@@ -29,23 +32,18 @@ const CreateCollection: React.FC = () => {
     hash,
   });
 
-  useEffect(() => {
-    console.log("Wallet connected:", isConnected);
-    console.log("Current chain ID:", chainId);
-    console.log("Expected chain ID (Sepolia):", sepolia.id);
-  }, [isConnected, chainId]);
-
-  useEffect(() => {
-    if (writeError) {
-      console.error("Write contract error:", writeError);
-      setError(`Error: ${writeError.message}`);
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files.length > 0) {
+      setFile(e.target.files[0]);
+    } else {
+      setFile(null);
     }
-  }, [writeError]);
+  };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
-    console.log("Submitting form...", { name, symbol });
+    console.log("Submitting form...", { name, symbol, file });
 
     if (!isConnected) {
       setError("Please connect your wallet");
@@ -54,26 +52,42 @@ const CreateCollection: React.FC = () => {
 
     if (chainId !== sepolia.id) {
       setError(
-        `Please switch to Sepolia network. Current chain ID: ${chainId}`,
+        `Please switch to Sepolia network. Current chain ID: ${chainId}`
       );
       return;
     }
 
+    if (!file) {
+      setError("Please select an image file");
+      return;
+    }
+
     try {
+      setIsUploading(true);
+      console.log("Uploading image to IPFS...");
+      
+      // Create a File object with a path-like name
+      const fileWithPath = new File([file], `nft-collections/${file.name}`, { type: file.type });
+      
+      const imageUrl = await uploadToIPFS(fileWithPath);
+      setIsUploading(false);
+      console.log("Image uploaded to IPFS:", imageUrl);
+
       console.log("Attempting to create collection...");
       writeContract({
         address: FACTORY_ADDRESS,
         abi: factoryABI,
         functionName: "createCollection",
-        args: [name, symbol],
+        args: [name, symbol, imageUrl],
       });
       console.log("Write contract call initiated");
     } catch (err) {
+      setIsUploading(false);
       console.error("Error creating collection:", err);
       setError(
         `Failed to create collection: ${
           err instanceof Error ? err.message : String(err)
-        }`,
+        }`
       );
     }
   };
@@ -81,10 +95,7 @@ const CreateCollection: React.FC = () => {
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
       <div>
-        <label
-          htmlFor="name"
-          className="block text-sm font-medium text-gray-700"
-        >
+        <label htmlFor="name" className="block text-sm font-medium text-gray-700">
           Collection Name
         </label>
         <input
@@ -97,10 +108,7 @@ const CreateCollection: React.FC = () => {
         />
       </div>
       <div>
-        <label
-          htmlFor="symbol"
-          className="block text-sm font-medium text-gray-700"
-        >
+        <label htmlFor="symbol" className="block text-sm font-medium text-gray-700">
           Collection Symbol
         </label>
         <input
@@ -112,18 +120,29 @@ const CreateCollection: React.FC = () => {
           required
         />
       </div>
+      <div>
+        <label htmlFor="file" className="block text-sm font-medium text-gray-700">
+          Collection Image
+        </label>
+        <input
+          type="file"
+          id="file"
+          onChange={handleFileChange}
+          className="mt-1 block w-full"
+          required
+        />
+      </div>
       <button
         type="submit"
-        disabled={isConfirming}
-        className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+        disabled={isConfirming || isUploading}
+        className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indio-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
       >
-        {isConfirming ? "Creating..." : "Create Collection"}
+        {isUploading ? "Uploading..." : isConfirming ? "Creating..." : "Create Collection"}
       </button>
       {isSuccess && (
         <p className="text-green-600">Collection created successfully!</p>
       )}
       {error && <p className="text-red-600">{error}</p>}
-      <p>Connected: {isConnected ? "Yes" : "No"}, Chain ID: {chainId}</p>
     </form>
   );
 };

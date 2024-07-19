@@ -26,7 +26,7 @@ interface NFTCollection {
   nfts: { tokenId: number; tokenURI: string }[];
 }
 
-export const ViewNFTs: React.FC = () => {
+export const ViewCollections: React.FC = () => {
   const { address } = useAccount();
   const [collections, setCollections] = useState<NFTCollection[]>([]);
 
@@ -74,7 +74,7 @@ export const ViewNFTs: React.FC = () => {
         });
 
         const nfts = await Promise.all(Array.from({ length: Number(balance) }, (_, i) => i).map(async (tokenId) => {
-          const tokenURI = useReadContract({
+          const tokenURI = await useReadContract({
             address: collection.address,
             abi: collectionABI,
             functionName: "tokenURI",
@@ -115,4 +115,4 @@ export const ViewNFTs: React.FC = () => {
   );
 };
 
-export default ViewNFTs;
+export default ViewCollections;
