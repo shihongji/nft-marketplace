@@ -9,20 +9,21 @@ import {DeployNFTFactory} from "./DeployNFTFactory.s.sol";
 
 contract UpgradeNFTFactory is Script {
     function run() external returns (address) {
+        //   address mostRecentlyDeployed =DevOpsTools.get_most_recent_deployment("ERC1967Proxy",block.chainid);
+        //   console.log(mostRecentlyDeployed);
         DeployNFTFactory deployer = new DeployNFTFactory();
-        address currentProxy = deployer.run();
-        
+        address _currentProxy = deployer.run();
         vm.startBroadcast();
         NFTFactoryV2 newNFTFactory = new NFTFactoryV2();
         vm.stopBroadcast();
-
-        return _upgradeNFTFactory(currentProxy, address(newNFTFactory));
+        address newProxy = upgradeNFTFactory(_currentProxy, address(newNFTFactory));
+        return address(newProxy);
     }
 
-    function _upgradeNFTFactory(address proxyAddress, address newImplementation) internal returns (address) {
+    function upgradeNFTFactory(address _proxy, address _newOne) public returns (address) {
         vm.startBroadcast();
-        NFTFactory proxy = NFTFactory(payable(proxyAddress));
-        proxy.upgradeToAndCall(newImplementation, new bytes(0));
+        NFTFactory proxy = NFTFactory(payable(_proxy));
+        proxy.upgradeToAndCall(address(_newOne), new bytes(0));
         vm.stopBroadcast();
         return address(proxy);
     }
