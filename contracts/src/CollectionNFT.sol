@@ -9,34 +9,36 @@ contract CollectionNFT is ERC721, ERC721URIStorage, Ownable {
     uint256 private _nextTokenId;
     string public collectionImageURI;
 
-    constructor(string memory name, string memory symbol, string memory _collectionImageURI, address initialOwner) 
-        ERC721(name, symbol)
-        Ownable(initialOwner)
-    {
+    constructor(
+        string memory name,
+        string memory symbol,
+        string memory _collectionImageURI,
+        address initialOwner
+    ) ERC721(name, symbol) Ownable(initialOwner) {
         collectionImageURI = _collectionImageURI;
     }
 
-    function safeMint(address to, string memory uri) public onlyOwner {
+    function safeMint(address to, string memory uri) external onlyOwner {
         uint256 tokenId = _nextTokenId++;
         _safeMint(to, tokenId);
         _setTokenURI(tokenId, uri);
     }
 
-    function tokenURI(uint256 tokenId)
-        public
-        view
-        override(ERC721, ERC721URIStorage)
-        returns (string memory)
+    function tokenURI(uint256 tokenId) 
+        public 
+        view 
+        override(ERC721, ERC721URIStorage) 
+        returns (string memory) 
     {
-        return super.tokenURI(tokenId);
+        return ERC721URIStorage.tokenURI(tokenId);
     }
 
-    function supportsInterface(bytes4 interfaceId)
-        public
-        view
-        override(ERC721, ERC721URIStorage)
-        returns (bool)
+    function supportsInterface(bytes4 interfaceId) 
+        public 
+        view 
+        override(ERC721, ERC721URIStorage) 
+        returns (bool) 
     {
-        return super.supportsInterface(interfaceId);
+        return ERC721.supportsInterface(interfaceId) || ERC721URIStorage.supportsInterface(interfaceId);
     }
 }
