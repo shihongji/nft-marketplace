@@ -3,7 +3,7 @@ import { useAccount, useReadContract, useReadContracts } from "wagmi";
 import { parseAbi } from "viem";
 
 const NFT_FACTORY_ADDRESS =
-  "0x7dA41Ed5A6607532bA4E9893C63c58F4e407b479" as const;
+  "0xCD75057E0cC025e842dA1fC1524c76ad4a58B777" as const;
 
 const factoryABI = parseAbi([
   "function getUserCollections(address user) view returns (address[])",
