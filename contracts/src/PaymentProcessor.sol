@@ -30,9 +30,18 @@ contract PaymentProcessor is Ownable {
         emit PriceSet(token, price);
     }
 
-    function processPayment(address token, uint256 amount, address payer, address payee) external {
+    function processPayment(
+        address token,
+        uint256 amount,
+        address payer,
+        address payee
+    ) external returns (bool) {
         require(acceptedTokens[token], "Token not accepted");
         require(tokenPrices[token] > 0, "Token price not set");
-        require(IERC20(token).transferFrom(payer, payee, amount), "Payment failed");
+        
+        IERC20 tokenContract = IERC20(token);
+        require(tokenContract.transferFrom(payer, payee, amount), "Payment failed");
+        
+        return true;
     }
 }

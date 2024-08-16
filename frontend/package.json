@@ -16,6 +16,7 @@
     "@walletconnect/web3wallet": "^1.13.0",
     "@web3-storage/w3up-client": "^15.0.0",
     "axios": "^1.7.2",
+    "dotenv": "^16.4.5",
     "ethers": "^5.7.2",
     "files-from-path": "^1.0.4",
     "ipfs-http-client": "^60.0.1",
