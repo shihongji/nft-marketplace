@@ -10,7 +10,7 @@ async function getClient() {
     const accounts = client.accounts()
     if (Object.keys(accounts).length === 0) {
       // If not logged in, you'll need to log in once
-      await client.login('your-email@example.com')
+      await client.login('shihongji21@gmail.com')
     }
 
     // Use the existing space
@@ -34,6 +34,8 @@ export const uploadToIPFS = async (file: File): Promise<string> => {
   try {
     console.log('Uploading file to IPFS...')
     const client = await getClient()
+    // log Client info here
+    console.log(client)
     
     // Create an array with a single file to use uploadDirectory
     
