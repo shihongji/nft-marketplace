@@ -1,0 +1,31 @@
+version: '4.32.0'
+services:
+  backend:
+    build: ./contracts
+    ports:
+      - "8000:8000"
+    networks:
+      - bitcoin-explorer-network
+    depends_on:
+      - db
+    command: ["/usr/local/bin/contracts"]
+
+  frontend:
+    build: ./frontend
+    ports:
+      - "80:80"
+    networks:
+      - bitcoin-explorer-network
+
+  db:
+    image: postgres:latest
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: bitcoin_explorer
+    networks:
+      - bitcoin-explorer-network
+
+networks:
+  bitcoin-explorer-network:
+    driver: bridge

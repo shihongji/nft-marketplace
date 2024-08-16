@@ -1,0 +1,6 @@
+CounterTest:testFuzz_SetNumber(uint256) (runs: 256, μ: 30977, ~: 31288)
+CounterTest:test_Increment() (gas: 31303)
+DeployAndUpgradeTest:test_NFTFactoryV1() (gas: 13293)
+DeployAndUpgradeTest:test_Upgrade() (gas: 3413256)
+MyNFTTest:testFailMintAsNonOwner() (gas: 13296)
+MyNFTTest:testMint() (gas: 111382)

@@ -1,3 +1,4 @@
+
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.20;
 
@@ -74,3 +75,4 @@ contract CollectionNFT is ERC721, ERC721URIStorage, Ownable {
         paymentProcessor = PaymentProcessor(_paymentProcessor);
     }
 }
+

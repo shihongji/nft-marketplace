@@ -1,9 +1,9 @@
-import { defineConfig } from 'vite'
-import react from '@vitejs/plugin-react'
-import { resolve } from 'path'
+import { defineConfig } from 'vite';
+import react from '@vitejs/plugin-react';
 
 export default defineConfig({
   plugins: [react()],
+
   base: './', // This is good for IPFS deployment
   build: {
     rollupOptions: {
@@ -31,5 +31,3 @@ export default defineConfig({
     alias: {
       '@': resolve(__dirname, 'src'), // Add this if you want to use @ as an alias for your src directory
     },
-  },
-})
